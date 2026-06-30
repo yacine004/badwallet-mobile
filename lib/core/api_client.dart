@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_exception.dart';
@@ -11,11 +12,15 @@ class ApiClient {
     try {
       final response = await http.get(Uri.parse(url)).timeout(_timeout);
       return _handleResponse(response);
-    } on http.ClientException {
-      throw ApiException('Impossible de joindre le serveur. Vérifiez votre connexion.');
+    } on TimeoutException {
+      throw ApiException('Délai d\'attente dépassé. Le serveur ne répond pas.');
+    } on ApiException {
+      rethrow;
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw ApiException('Délai d\'attente dépassé. Réessayez.');
+      // Sur Flutter Web, une erreur CORS ou un serveur injoignable
+      // remonte ici comme une exception générique (souvent ClientException).
+      throw ApiException(
+          'Impossible de joindre le serveur (réseau ou CORS). Détail : $e');
     }
   }
 
@@ -29,11 +34,13 @@ class ApiClient {
           )
           .timeout(_timeout);
       return _handleResponse(response);
-    } on http.ClientException {
-      throw ApiException('Impossible de joindre le serveur. Vérifiez votre connexion.');
+    } on TimeoutException {
+      throw ApiException('Délai d\'attente dépassé. Le serveur ne répond pas.');
+    } on ApiException {
+      rethrow;
     } catch (e) {
-      if (e is ApiException) rethrow;
-      throw ApiException('Délai d\'attente dépassé. Réessayez.');
+      throw ApiException(
+          'Impossible de joindre le serveur (réseau ou CORS). Détail : $e');
     }
   }
 
@@ -45,7 +52,6 @@ class ApiClient {
       try {
         return jsonDecode(response.body);
       } catch (_) {
-        // Certains endpoints renvoient du texte brut (ex: message de seeding)
         return response.body;
       }
     }
