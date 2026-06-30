@@ -62,3 +62,10 @@ flutter build apk --release
 ```
 
 L'exécutable est généré dans `build/app/outputs/flutter-apk/app-release.apk`.
+
+## Numéros de test
+
+Les numéros suivants existent dans la base de données seedée et permettent de tester l'ensemble des fonctionnalités (solde suffisant, factures ISM et WOYAFAL impayées disponibles) :
+
+- `+221770000005`
+- `+221770000007`
