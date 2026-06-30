@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/app_theme.dart';
 import '../../core/app_formatters.dart';
 import '../auth/auth_provider.dart';
+import '../auth/phone_entry_screen.dart';
 import 'wallet_provider.dart';
 import 'transaction_tile.dart';
 import '../transfers/transfer_screen.dart';
@@ -39,6 +40,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  Future<void> _confirmLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: const Text('Déconnexion'),
+        content: const Text('Voulez-vous vraiment vous déconnecter ? Vous devrez ressaisir votre numéro et votre code PIN.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Annuler')),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Déconnexion', style: TextStyle(color: AppTheme.danger)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    await context.read<AuthProvider>().logout();
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const PhoneEntryScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final walletProvider = context.watch<WalletProvider>();
@@ -52,6 +82,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: const Icon(Icons.refresh_rounded),
             onPressed: _load,
             tooltip: 'Actualiser',
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded),
+            onPressed: _confirmLogout,
+            tooltip: 'Déconnexion',
           ),
         ],
       ),

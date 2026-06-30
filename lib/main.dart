@@ -6,6 +6,7 @@ import 'features/auth/auth_provider.dart';
 import 'features/auth/splash_screen.dart';
 import 'features/dashboard/wallet_provider.dart';
 import 'features/transfers/transfer_provider.dart';
+import 'features/bills/bills_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ class BadWalletApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(create: (_) => TransferProvider()),
+        ChangeNotifierProvider(create: (_) => BillsProvider()),
       ],
       child: MaterialApp(
         title: 'BadWallet',
