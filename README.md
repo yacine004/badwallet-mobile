@@ -1,3 +1,36 @@
+# BadWallet Mobile
+
+Application mobile Flutter pour la gestion d'un portefeuille électronique BadWallet — consultation du solde, transferts d'argent, paiement de factures et historique des transactions.
+
+## Stack technique
+
+- **Flutter** / **Dart**
+- **Provider** pour la gestion d'état (Loading / Loaded / Error)
+- **http** pour la communication avec l'API REST
+- **flutter_secure_storage** pour la session locale (téléphone, code wallet, PIN)
+- **intl** pour le formatage des montants (XOF) et des dates en français
+
+## Backend requis
+
+L'application consomme deux microservices Spring Boot qui doivent être lancés en local avant d'utiliser l'app :
+
+| Service | Port | Rôle |
+|---|---|---|
+| `badwallet-api` | 8080 | Wallets, transactions, transferts, paiements |
+| `payment-service` | 8081 | Factures (ISM, WOYAFAL, RAPIDO, SENELEC) |
+
+## Architecture du projet
+lib/
+├── core/                    # Constantes API, client HTTP, thème, formatters
+├── models/                  # Wallet, AppTransaction, Facture
+├── features/
+│   ├── auth/                 # Splash, saisie téléphone, création/vérification PIN
+│   ├── dashboard/             # Solde, actions rapides, dernières transactions
+│   ├── transfers/             # Transfert d'argent (pavé numérique + confirmation)
+│   ├── bills/                 # Paiement de factures (sélection multiple)
+│   └── history/               # Historique complet avec filtres par type
+└── main.dart                 # Point d'entrée, configuration des Providers
+
 ## Fonctionnalités
 
 - **Authentification simulée** : saisie du numéro de téléphone (vérifié auprès du backend), puis création d'un code PIN local à 4 chiffres pour sécuriser l'accès à l'application.
